@@ -14,6 +14,7 @@ import os
 from lxml import etree
 import datetime as dt
 import matplotlib.pyplot as plt
+import re
 
 wd = 'C:\\Users\\nickmc\\Documents\\texts_analysis'
 data = 'texts_xml_data.xml'
@@ -56,13 +57,15 @@ df_text['datetime'] = pd.to_datetime(df_text['datetime'], format='%b %d, %Y %H:%
 min_date = min(df_text['datetime'])
 max_date = max(df_text['datetime'])
 length = 21
+word_oi = 'zillow'
 day_seq = pd.date_range(start=min_date, end=max_date-dt.timedelta(days=length), freq='D')
 
 avg_z = []
 for d in day_seq:
     text_array = df_text.loc[(df_text['datetime'] >= d) & (df_text['datetime'] < d + length),'body'].str.lower()
     text_concat = ' '.join(text_array)
-    avg_z_temp = text_concat.count('z')/float(length)
+    num_words = len(re.findall(r'\w+', text_concat))
+    avg_z_temp = text_concat.count(word_oi)/float(num_words)
     avg_z.append(avg_z_temp)
 
 plt.plot(avg_z)
